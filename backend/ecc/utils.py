@@ -1,10 +1,12 @@
-""" Utils """
+""" Utils for ecc"""
 import functools
 import time
 import random
 import os
 
-from point import Point
+from ecc.point import Point
+
+__author__ = "Azis Adi Kuncoro"
 
 
 def timer(func):
@@ -97,7 +99,7 @@ def generate_private_key(file_name, n):
     return pri
 
 
-def generate_keys(key_name,ecc, basis_point, n):
+def generate_keys(key_name, ecc, basis_point, n):
     pri = generate_private_key("{}.pri".format(key_name), n)
     generate_public_key("{}.pub".format(key_name), ecc, basis_point, pri)
 

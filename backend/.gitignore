@@ -1,8 +1,8 @@
-# Pyc's
-*.pyc
+# Python Cache
+__pycache__/
 
 # notebook checkpoints
-*-checkpoint.ipynb
+.ipynb_checkpoints/
 
 # Public and private keys
 *.pub

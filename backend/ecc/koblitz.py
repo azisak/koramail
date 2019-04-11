@@ -1,10 +1,13 @@
-from utils import *
-from point import Point
+"""Implementation of koblitz encoding and decoding"""
+from ecc.utils import *
+from ecc.point import Point
 import math
+
+__author__ = "Azis Adi Kuncoro"
+
 
 def encode(k, n, p, a, b, message_byte):
     """Return encoded point"""
-#     m = encode_char(message_char)
     m = encode_byte(message_byte)
     # Find solveable y
     for i in range(1, k):
@@ -14,11 +17,12 @@ def encode(k, n, p, a, b, message_byte):
             break
     return Point(x, y)
 
+
 def decode(k, x):
     """Return message char"""
     code = math.floor((x-1)/k)
-#     return decode_code(code)
     return decode_int(code)
+
 
 def do_encoding(k, n, p, a, b, messages):
     """Do the encoding things"""
