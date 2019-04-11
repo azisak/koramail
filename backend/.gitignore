@@ -1,0 +1,9 @@
+# Pyc's
+*.pyc
+
+# notebook checkpoints
+*-checkpoint.ipynb
+
+# Public and private keys
+*.pub
+*.pri
