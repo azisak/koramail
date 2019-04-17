@@ -27,11 +27,13 @@ flask run
 **Available method**: POST
 
 **Request payload**: Form
+
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| -------------------- |
 | message     | ***String*** | Message to be signed |
 
 **Response**: JSON object 
+
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| ---------------------|
 | message     | ***String*** | Original message     |
@@ -41,12 +43,14 @@ flask run
 **Available method**: POST
 
 **Request payload**: Form
+
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| -------------------- |
 | message     | ***String*** | Message to be verified |
 | signature     | ***String*** | Signature to be verified |
 
 **Response**: JSON object 
+
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| ---------------------|
 | verified     | ***Boolean*** | Condition whether the message signed or not     |
