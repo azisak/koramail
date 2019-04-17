@@ -71,6 +71,6 @@ def verify():
 
     response = {
         'verified': isVerified,
-        'message': err_msg
+        'error_msg': err_msg
     }
     return jsonify(response)
