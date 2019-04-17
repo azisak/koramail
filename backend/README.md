@@ -53,5 +53,5 @@ flask run
 
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| ---------------------|
-| verified     | ***Boolean*** | Condition whether the message signed or not     |
-| error_msg   | ***String*** | (optional) Any error message occured during signing |
+| verified     | ***Boolean*** | Condition whether the message verified or not     |
+| error_msg   | ***String*** | (optional) Any error message occured during verifying |
