@@ -7,12 +7,15 @@ Install the requirements
 pip install -r requirements.txt
 ```
 
-## Running Backend
+## Configurations
+All configs located in config.json, feel free to change
+
+## Running Backend Server
 Export flask variable
 ```
 export FLASK_APP="main.py"
 ```
-Running flask
+Running flask. By default it will run on port 5000
 ```
 flask run
 ```

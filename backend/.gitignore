@@ -7,3 +7,6 @@ __pycache__/
 # Public and private keys
 *.pub
 *.pri
+
+# Vscode
+.vscode
