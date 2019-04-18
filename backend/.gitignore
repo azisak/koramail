@@ -1,6 +1,9 @@
 # Python Cache
 __pycache__/
 
+# python compiled file
+*.pyc
+
 # notebook checkpoints
 .ipynb_checkpoints/
 
