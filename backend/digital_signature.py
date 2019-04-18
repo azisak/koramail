@@ -1,4 +1,5 @@
 import hashlib
+import keccak
 
 
 def sign_message(message, ecc, point_basis, public_key):
@@ -11,8 +12,7 @@ def sign_message(message, ecc, point_basis, public_key):
     if (type(message) != bytes):
         message = bytes(message, "utf-8")
 
-    # TODO: Using radiyya's SHA implementation to create signature
-    signature = hashlib.sha1(message).hexdigest()
+    signature = SHA3_512(message.encode())
 
     signature = signature.encode('utf-8')
     signature = ecc.encrypt_message(signature, point_basis, public_key)
@@ -30,8 +30,7 @@ def verified(message, signature, ecc, private_key):
     if (type(message) != bytes):
         message = bytes(message, "utf-8")
 
-    # TODO: Using radiyya's SHA implementation to verify signature
-    m_signature = hashlib.sha1(message).hexdigest()
+    m_signature = SHA3_512(message.encode())
 
     signature = ecc.decrypt_message(signature, private_key)
     signature = signature.decode('utf-8')
