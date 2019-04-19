@@ -92,7 +92,7 @@ def encrypt():
 
     return json.dumps(response)
 
-@app.route('api/decrypt', methods=['POST'])
+@app.route('/api/decrypt', methods=['POST'])
 def decrypt():
     """Get decrypted body message 
     Returns:
@@ -105,5 +105,5 @@ def decrypt():
     response = {
         'decrypted': decrypted
     }
-    
+
     return json.dumps(response)
