@@ -12,6 +12,8 @@ import os
 import json
 import hashlib
 import sqlite3
+import glob
+
 
 app = Flask(__name__)
 
@@ -110,6 +112,40 @@ def decrypt():
     }
 
     return json.dumps(response)
+
+@app.route('/api/keys/<email>', methods=['GET'])
+def getKeys(email):
+    """Get public and private keys from username
+    Returns:
+      public and private key
+    """
+    files = glob.glob('./keys/{}.*'.format(email))
+    # Generate keys if not exists
+    if (len(files) == 0):
+        generate_keys(email, ecc, point_basis, config['ecc']['n'])
+
+    files = glob.glob('./keys/{}.*'.format(email))
+    if (files[0].split('.')[-1] == "pub"):
+        pub_path = files[0]
+        pri_path = files[1]
+    else:
+        pub_path = files[1]
+        pri_path = files[0]
+    with open(pub_path,"r") as f_pub:
+        pub_content = f_pub.read()
+        f_pub.close()
+    with open(pri_path,"r") as f_pri:
+        pri_content = f_pri.read()
+        f_pri.close()
+    response = {
+        'public_key': pub_content,
+        'private_key': pri_content
+    }
+
+    return jsonify(response)
+
+
+
 @app.route('/api/inbox/<email>',methods=['GET','POST','DELETE'])
 def inbox(email):
     """# TODO: Create docstring for inbox endpoint
