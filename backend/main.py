@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from digital_signature import *
+from encrypt_body import *
 from ecc.curve import ECC
 from ecc.point import Point
 from ecc.utils import *
@@ -74,3 +75,20 @@ def verify():
         'error_msg': err_msg
     }
     return jsonify(response)
+
+@app.route('/api/encrypt', methods=['POST'])
+def encrypt():
+    """Encrypt body message 
+    Returns:
+      encrypted message
+    """
+    message = request.form['message']
+    key = request.form['key']
+    encrypted = encrypt_message(message, key)
+
+    response = {
+        'encrypted': encrypted
+    }
+
+    print(response)
+    return json.dumps(response)
