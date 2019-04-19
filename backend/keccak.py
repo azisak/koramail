@@ -18,7 +18,7 @@ def permutation(path):
     R = 1
     # 24 round because 1600
     for round in range(24):
-        # θ
+
         C = list()
         for x in range(5):
             C.append(path[x][0] ^ path[x][1] ^ path[x][2] ^ path[x][3] ^ path[x][4])
@@ -33,14 +33,12 @@ def permutation(path):
             temppath.append(temp)
         path = temppath    
 
-        # ρ and π
         (x, y) = (1, 0)
         current = path[x][y]
         for t in range(24):
             (x, y) = (y, (2*x+3*y)%5)
             (current, path[x][y]) = (path[x][y], rot(current, (t+1)*(t+2)//2))
-            
-        # χ
+
         for y in range(5):
             T = list()
             for x in range(5):
@@ -48,7 +46,6 @@ def permutation(path):
             for x in range(5):
                 path[x][y] = T[x] ^((~T[(x+1)%5]) & T[(x+2)%5])
 
-        # ι
         for j in range(7):
             R = ((R << 1) ^ ((R >> 7)*0x71)) % 256
             if (R & 2):
