@@ -56,7 +56,55 @@ flask run
 | verified     | ***Boolean*** | Condition whether the message verified or not     |
 | error_msg   | ***String*** | (optional) Any error message occured during verifying |
 
-### 3. /api/inbox/```<email>```
+### 1. /api/sign
+**Available method**: POST
+
+**Request payload**: Form
+
+| Attribute   | Type         | Description          |
+| ----------- |:------------:| -------------------- |
+| message     | ***String*** | Message to be signed |
+
+**Response**: JSON object 
+
+| Attribute   | Type         | Description          |
+| ----------- |:------------:| ---------------------|
+| message     | ***String*** | Original message     |
+| signature   | ***String*** | Signature of message |
+
+### 3. /api/encrypt
+**Available method**: POST
+
+**Request payload**: Form
+
+| Attribute   | Type         | Description             |
+| ----------- |:------------:| ------------------------|
+| message     | ***String*** | Message to be encrypted |
+| key         | ***String*** | Key for encryption      |
+
+**Response**: JSON object 
+
+| Attribute     | Type         | Description           |
+| ------------- |:------------:| ----------------------|
+| encrypted     | ***String*** | Encrypted message     |
+
+### 4. /api/decrypt
+**Available method**: POST
+
+**Request payload**: Form
+
+| Attribute   | Type         | Description             |
+| ----------- |:------------:| ------------------------|
+| message     | ***String*** | Message to be decrypted |
+| key         | ***String*** | Key for decryption      |
+
+**Response**: JSON object 
+
+| Attribute     | Type         | Description           |
+| ------------- |:------------:| ----------------------|
+| decrypted     | ***String*** | Decrypted message     |
+
+### 5. /api/inbox/```<email>```
 *Example*: ```/api/inbox/my_mail@gmail.com```
 
 **Available method**: GET, POST, DELETE
@@ -100,7 +148,7 @@ Delete a mail with specific Identifier provided
 
 **Response**: String, message indicating a mail was deleted successfully from the database
 
-### 4. /api/sent_mail/```<email>```
+### 6. /api/sent_mail/```<email>```
 *Example*: ```/api/sent_mail/my_mail@gmail.com```
 
 **Available method**: GET, POST, DELETE
