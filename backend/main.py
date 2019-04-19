@@ -90,5 +90,20 @@ def encrypt():
         'encrypted': encrypted
     }
 
-    print(response)
+    return json.dumps(response)
+
+@app.route('api/decrypt', methods=['POST'])
+def decrypt():
+    """Get decrypted body message 
+    Returns:
+      decrypted message
+    """
+    message = request.form['message']
+    key = request.form['key']
+    decrypted = decrypt_message(message, key)
+
+    response = {
+        'decrypted': decrypted
+    }
+    
     return json.dumps(response)
