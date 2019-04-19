@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from flask import Flask, request, jsonify
 from digital_signature import *
 from encrypt_body import *
@@ -87,7 +88,7 @@ def encrypt():
     encrypted = encrypt_message(message, key)
 
     response = {
-        'encrypted': encrypted
+        'encrypted': encrypted.hex()
     }
 
     return json.dumps(response)
@@ -98,7 +99,8 @@ def decrypt():
     Returns:
       decrypted message
     """
-    message = request.form['message']
+    a = request.form['message']
+    message = bytes.fromhex(a)
     key = request.form['key']
     decrypted = decrypt_message(message, key)
 
