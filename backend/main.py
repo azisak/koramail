@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 from flask import Flask, request, jsonify, g, Response
-from digital_signature import *
 from encrypt_body import *
 
 import sys
@@ -22,6 +21,8 @@ with open('config.json') as config_file:
 
 
 def generate_keys(key_name):
+    if not os.path.exists('keys'):
+        os.makedirs('keys')
     sk = ecdsa.SigningKey.generate()
     private_key = sk.to_string().hex()
     public_key = sk.get_verifying_key().to_string().hex()
