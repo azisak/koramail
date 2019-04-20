@@ -2,10 +2,6 @@
 from flask import Flask, request, jsonify, g, Response
 from digital_signature import *
 from encrypt_body import *
-from ecc.curve import ECC
-from ecc.point import Point
-from ecc.utils import *
-from ecc.koblitz import *
 
 import sys
 import os
@@ -13,7 +9,7 @@ import json
 import hashlib
 import sqlite3
 import glob
-
+import ecdsa
 
 app = Flask(__name__)
 
@@ -22,35 +18,28 @@ with open('config.json') as config_file:
     config = json.load(config_file)
     config_file.close()
 
-# ECC Elgamal initialization
-ecc = ECC(
-    config['ecc']['a'],
-    config['ecc']['b'],
-    config['ecc']['p'],
-    config['ecc']['k'],
-    config['ecc']['n']
-)
 
-# Generate base point
-point_basis = ecc.create_basis_point()
-print("Basis:", point_basis, "is_on_curve:", ecc.is_on_curve(point_basis))
-
-# Generating public and private keys
-generate_keys("sender", ecc, point_basis, config['ecc']['n'])
-
-# Reading public and private keys
-private_key = read_private_key("keys/sender.pri")
-public_key = read_public_key("keys/sender.pub")
+def generate_keys(key_name):
+    sk = ecdsa.SigningKey.generate()
+    private_key = sk.to_string().hex()
+    public_key = sk.get_verifying_key().to_string().hex()
+    for key_type, key in zip(["pub", "pri"], [public_key, private_key]):
+        with open("./keys/{}.{}".format(key_name, key_type), "w") as f:
+            f.write(key)
+            f.close()
 
 
 @app.route('/api/sign', methods=['POST'])
 def sign():
     """Give signature to a message
     Returns:
-      signature 
+      message, signature 
     """
     message = request.form['message']
-    signature = sign_message(message, ecc, point_basis, public_key)
+    private_key = request.form['private_key']
+
+    sk = ecdsa.SigningKey.from_string(bytes.fromhex(private_key))
+    signature = sk.sign(message.encode('utf-8')).hex()
 
     response = {
         'message': message,
@@ -66,19 +55,21 @@ def verify():
       True if verified, else False
     """
     message = request.form['message']
+    public_key = request.form['public_key']
     signature = request.form['signature']
-    err_msg = ""
+
+    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key))
+
     try:
-        isVerified = verified(message, signature, ecc, private_key)
-    except Exception as err:
-        err_msg = "Error happened during verifying"
+        isVerified = vk.verify(bytes.fromhex(signature), message.encode('utf-8'))
+    except ecdsa.BadSignatureError:
         isVerified = False
 
     response = {
         'verified': isVerified,
-        'error_msg': err_msg
     }
     return jsonify(response)
+
 
 @app.route('/api/encrypt', methods=['POST'])
 def encrypt():
@@ -95,6 +86,7 @@ def encrypt():
     }
 
     return json.dumps(response)
+
 
 @app.route('/api/decrypt', methods=['POST'])
 def decrypt():
@@ -113,6 +105,7 @@ def decrypt():
 
     return json.dumps(response)
 
+
 @app.route('/api/keys/<email>', methods=['GET'])
 def getKeys(email):
     """Get public and private keys from username
@@ -122,7 +115,7 @@ def getKeys(email):
     files = glob.glob('./keys/{}.*'.format(email))
     # Generate keys if not exists
     if (len(files) == 0):
-        generate_keys(email, ecc, point_basis, config['ecc']['n'])
+        generate_keys(email)
 
     files = glob.glob('./keys/{}.*'.format(email))
     if (files[0].split('.')[-1] == "pub"):
@@ -131,10 +124,10 @@ def getKeys(email):
     else:
         pub_path = files[1]
         pri_path = files[0]
-    with open(pub_path,"r") as f_pub:
+    with open(pub_path, "r") as f_pub:
         pub_content = f_pub.read()
         f_pub.close()
-    with open(pri_path,"r") as f_pri:
+    with open(pri_path, "r") as f_pri:
         pri_content = f_pri.read()
         f_pri.close()
     response = {
@@ -145,63 +138,70 @@ def getKeys(email):
     return jsonify(response)
 
 
-
-@app.route('/api/inbox/<email>',methods=['GET','POST','DELETE'])
+@app.route('/api/inbox/<email>', methods=['GET', 'POST', 'DELETE'])
 def inbox(email):
     """# TODO: Create docstring for inbox endpoint
     """
     if request.method == 'GET':
-        inboxes = query_db("SELECT * FROM  mails WHERE receiver_mail = ?",[email])
-        dict_list = [dict(zip(inbox.keys(),inbox)) for inbox in inboxes]
+        inboxes = query_db(
+            "SELECT * FROM  mails WHERE receiver_mail = ?", [email])
+        dict_list = [dict(zip(inbox.keys(), inbox)) for inbox in inboxes]
         return jsonify(dict_list)
     elif request.method == 'POST':
         subject = request.form['subject']
         sender_mail = request.form['sender_mail']
         content = request.form['content']
         receiver_mail = email
-        insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',(subject,sender_mail, receiver_mail, content))
-        return Response("Successfully insert new inbox",status=200)
+        insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',
+                  (subject, sender_mail, receiver_mail, content))
+        return Response("Successfully insert new inbox", status=200)
     elif request.method == 'DELETE':
         mail_id = request.form['mail_id']
-        delete_row('DELETE FROM mails WHERE id = ?',[mail_id])
+        delete_row('DELETE FROM mails WHERE id = ?', [mail_id])
         return Response("Successfully deleted mail with id : {}".format(mail_id), 200)
 
 
-@app.route('/api/sent_mail/<email>',methods=['GET','POST','DELETE'])
+@app.route('/api/sent_mail/<email>', methods=['GET', 'POST', 'DELETE'])
 def sent_mail(email):
     """# TODO: Create docstring for sent_mail endpoint
     """
     if request.method == 'GET':
-        inboxes = query_db("SELECT * FROM  mails WHERE sender_mail = ?",[email])
-        dict_list = [dict(zip(inbox.keys(),inbox)) for inbox in inboxes]
+        inboxes = query_db(
+            "SELECT * FROM  mails WHERE sender_mail = ?", [email])
+        dict_list = [dict(zip(inbox.keys(), inbox)) for inbox in inboxes]
         return jsonify(dict_list)
     elif request.method == 'POST':
         subject = request.form['subject']
         sender_mail = email
         content = request.form['content']
         receiver_mail = request.form['receiver_mail']
-        insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',(subject,sender_mail, receiver_mail, content))
-        return Response("Successfully insert new sent_mail",status=200)
+        insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',
+                  (subject, sender_mail, receiver_mail, content))
+        return Response("Successfully insert new sent_mail", status=200)
     elif request.method == 'DELETE':
         mail_id = request.form['mail_id']
-        delete_row('DELETE FROM mails WHERE id = ?',[mail_id])
+        delete_row('DELETE FROM mails WHERE id = ?', [mail_id])
         return Response("Successfully deleted mail with id : {}".format(mail_id), 200)
+
 
 def insert_db(query, args=()):
     conn = get_db()
     conn.execute(query, args)
     conn.commit()
 
+
 def delete_row(query, args=()):
     conn = get_db()
     conn.execute(query, args)
     conn.commit()
+
 
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -211,6 +211,7 @@ def get_db():
         g._database = db
 
     return db
+
 
 @app.teardown_appcontext
 def close_connection(exception):

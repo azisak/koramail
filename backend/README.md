@@ -31,6 +31,7 @@ flask run
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| -------------------- |
 | message     | ***String*** | Message to be signed |
+| private_key | ***String*** | Private key of signer|
 
 **Response**: JSON object 
 
@@ -44,35 +45,31 @@ flask run
 
 **Request payload**: Form
 
-| Attribute   | Type         | Description          |
-| ----------- |:------------:| -------------------- |
-| message     | ***String*** | Message to be verified |
-| signature     | ***String*** | Signature to be verified |
+| Attribute   | Type         | Description              |
+| ----------- |:------------:| -------------------------|
+| message     | ***String*** | Message to be verified   |
+| public_key  | ***String*** | Public key of signer     |
+| signature   | ***String*** | Signature to be verified |
 
 **Response**: JSON object 
 
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| ---------------------|
 | verified     | ***Boolean*** | Condition whether the message verified or not     |
-| error_msg   | ***String*** | (optional) Any error message occured during verifying |
 
-### 1. /api/sign
-**Available method**: POST
+### 3. /api/keys/```<email>```
+*Example*: ```/api/keys/my_mail@gmail.com```
 
-**Request payload**: Form
-
-| Attribute   | Type         | Description          |
-| ----------- |:------------:| -------------------- |
-| message     | ***String*** | Message to be signed |
+**Available method**: GET
 
 **Response**: JSON object 
 
 | Attribute   | Type         | Description          |
 | ----------- |:------------:| ---------------------|
-| message     | ***String*** | Original message     |
-| signature   | ***String*** | Signature of message |
+| public_key    | ***String*** | Public key of ```email```     |
+| private_key   | ***String*** | Private key of ```email```     |
 
-### 3. /api/encrypt
+### 4. /api/encrypt
 **Available method**: POST
 
 **Request payload**: Form
@@ -88,7 +85,7 @@ flask run
 | ------------- |:------------:| ----------------------|
 | encrypted     | ***String*** | Encrypted message     |
 
-### 4. /api/decrypt
+### 5. /api/decrypt
 **Available method**: POST
 
 **Request payload**: Form
@@ -104,7 +101,7 @@ flask run
 | ------------- |:------------:| ----------------------|
 | decrypted     | ***String*** | Decrypted message     |
 
-### 5. /api/inbox/```<email>```
+### 6. /api/inbox/```<email>```
 *Example*: ```/api/inbox/my_mail@gmail.com```
 
 **Available method**: GET, POST, DELETE
@@ -148,7 +145,7 @@ Delete a mail with specific Identifier provided
 
 **Response**: String, message indicating a mail was deleted successfully from the database
 
-### 6. /api/sent_mail/```<email>```
+### 7. /api/sent_mail/```<email>```
 *Example*: ```/api/sent_mail/my_mail@gmail.com```
 
 **Available method**: GET, POST, DELETE
