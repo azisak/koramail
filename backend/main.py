@@ -10,6 +10,8 @@ import hashlib
 import sqlite3
 import glob
 import ecdsa
+import keccak
+
 
 app = Flask(__name__)
 
@@ -38,8 +40,10 @@ def sign():
     message = request.form['message']
     private_key = request.form['private_key']
 
+    message_digest = keccak.SHA3_512(message.encode('utf-8'))
+
     sk = ecdsa.SigningKey.from_string(bytes.fromhex(private_key))
-    signature = sk.sign(message.encode('utf-8')).hex()
+    signature = sk.sign(message_digest).hex()
 
     response = {
         'message': message,
@@ -61,7 +65,8 @@ def verify():
     vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key))
 
     try:
-        isVerified = vk.verify(bytes.fromhex(signature), message.encode('utf-8'))
+        message_digest = keccak.SHA3_512(message.encode('utf-8'))
+        isVerified = vk.verify(bytes.fromhex(signature), message_digest)
     except ecdsa.BadSignatureError:
         isVerified = False
 
