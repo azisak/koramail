@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from flask import Flask, request, jsonify, g, Response
+from flask import Flask, request, jsonify, g, Response, send_from_directory
 from encrypt_body import *
 
 import sys
@@ -10,14 +10,19 @@ import sqlite3
 import glob
 import ecdsa
 import keccak
-
-
-app = Flask(__name__)
+import os
 
 # Reading config
 with open('config.json') as config_file:
     config = json.load(config_file)
     config_file.close()
+
+if not os.path.exists(config['flask']['upload_path']):
+        os.makedirs(config['flask']['upload_path'])
+
+static_url_path = "/"+config['flask']['upload_path']
+app = Flask(__name__, static_folder=config['flask']['upload_path'], static_url_path=static_url_path)
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(),config['flask']['upload_path'])
 
 
 def generate_keys(key_name):
@@ -143,23 +148,34 @@ def getKeys(email):
 
     return jsonify(response)
 
-
 @app.route('/api/inbox/<email>', methods=['GET', 'POST', 'DELETE'])
 def inbox(email):
-    """# TODO: Create docstring for inbox endpoint
-    """
     if request.method == 'GET':
         inboxes = query_db(
             "SELECT * FROM  mails WHERE receiver_mail = ?", [email])
         dict_list = [dict(zip(inbox.keys(), inbox)) for inbox in inboxes]
+        for dict_item in dict_list:
+            dict_item['attachment_paths'] = dict_item['attachment_paths'].split(',') if dict_item['attachment_paths'] else []
         return jsonify(dict_list)
     elif request.method == 'POST':
         subject = request.form['subject']
         sender_mail = request.form['sender_mail']
         content = request.form['content']
         receiver_mail = email
-        insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',
+        mail_id = insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',
                   (subject, sender_mail, receiver_mail, content))
+        mail_id = str(mail_id)
+        if 'file' in request.files:
+            attachments = request.files.getlist('file')
+            attachment_folder = os.path.join(app.config['UPLOAD_FOLDER'], mail_id)
+            if not os.path.exists(attachment_folder):
+                os.makedirs(attachment_folder)
+            saved_paths = []
+            for attachment in attachments:
+                attachment.save(os.path.join(attachment_folder, attachment.filename))
+                saved_path = "/{}/{}/{}".format(config['flask']['upload_path'],mail_id,attachment.filename)
+                saved_paths.append(saved_path)
+            insert_db('UPDATE MAILS  SET attachment_paths = ? WHERE ID = ?',(",".join(saved_paths), mail_id))
         return Response("Successfully insert new inbox", status=200)
     elif request.method == 'DELETE':
         mail_id = request.form['mail_id']
@@ -167,23 +183,36 @@ def inbox(email):
         return Response("Successfully deleted mail with id : {}".format(mail_id), 200)
 
 
+
 @app.route('/api/sent_mail/<email>', methods=['GET', 'POST', 'DELETE'])
 def sent_mail(email):
-    """# TODO: Create docstring for sent_mail endpoint
-    """
     if request.method == 'GET':
         inboxes = query_db(
             "SELECT * FROM  mails WHERE sender_mail = ?", [email])
         dict_list = [dict(zip(inbox.keys(), inbox)) for inbox in inboxes]
+        for dict_item in dict_list:
+            dict_item['attachment_paths'] = dict_item['attachment_paths'].split(',') if dict_item['attachment_paths'] else []
         return jsonify(dict_list)
     elif request.method == 'POST':
         subject = request.form['subject']
         sender_mail = email
         content = request.form['content']
         receiver_mail = request.form['receiver_mail']
-        insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',
+        mail_id = insert_db('INSERT INTO mails (subject,sender_mail,receiver_mail,content) VALUES (?,?,?,?)',
                   (subject, sender_mail, receiver_mail, content))
-        return Response("Successfully insert new sent_mail", status=200)
+        mail_id = str(mail_id)
+        if 'file' in request.files:
+            attachments = request.files.getlist('file')
+            attachment_folder = os.path.join(app.config['UPLOAD_FOLDER'], mail_id)
+            if not os.path.exists(attachment_folder):
+                os.makedirs(attachment_folder)
+            saved_paths = []
+            for attachment in attachments:
+                attachment.save(os.path.join(attachment_folder, attachment.filename))
+                saved_path = "/{}/{}/{}".format(config['flask']['upload_path'],mail_id,attachment.filename)
+                saved_paths.append(saved_path)
+            insert_db('UPDATE MAILS  SET attachment_paths = ? WHERE ID = ?',(",".join(saved_paths), mail_id))
+        return Response("Successfully insert new inbox", status=200)
     elif request.method == 'DELETE':
         mail_id = request.form['mail_id']
         delete_row('DELETE FROM mails WHERE id = ?', [mail_id])
@@ -192,8 +221,10 @@ def sent_mail(email):
 
 def insert_db(query, args=()):
     conn = get_db()
-    conn.execute(query, args)
+    cur = conn.cursor()
+    cur.execute(query, args)
     conn.commit()
+    return cur.lastrowid
 
 
 def delete_row(query, args=()):

@@ -120,6 +120,7 @@ Where each object defined as below
 | sender_mail   | ***String*** | Sender email |
 | receiver_mail   | ***String*** | Receiver email (in this case equals to ```email```) |
 | content   | ***String*** | Content of a mail |
+| attachment_paths   | List of ***String*** | attachments of that email (in URI) |
 
 ### POST METHOD
 Insert new inbox mail, with receiver = ```email```
@@ -131,6 +132,7 @@ Insert new inbox mail, with receiver = ```email```
 | subject   | ***String*** | Subject of a mail |
 | sender_mail   | ***String*** | Sender email |
 | content   | ***String*** | Content of a mail |
+| file   | ***File*** | attachments, allow multiple |
 
 **Response**: String, message indicating a mail was inserted successfully to the database
 
@@ -164,6 +166,7 @@ Where each object defined as below
 | sender_mail   | ***String*** | Sender email (in this case equals to ```email```) |
 | receiver_mail   | ***String*** | Receiver email  |
 | content   | ***String*** | Content of a mail |
+| attachment_paths   | List of ***String*** | attachments of that email (in URI) |
 
 ### POST METHOD
 Insert new sent mail, with receiver = ```email```
@@ -175,6 +178,7 @@ Insert new sent mail, with receiver = ```email```
 | subject   | ***String*** | Subject of a mail |
 | receiver_mail   | ***String*** | Receiver email |
 | content   | ***String*** | Content of a mail |
+| file   | ***File*** | attachments, allow multiple |
 
 **Response**: String, message indicating a mail was inserted successfully to the database
 

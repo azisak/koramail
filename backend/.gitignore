@@ -13,3 +13,6 @@ __pycache__/
 
 # Vscode
 .vscode
+
+# Ignore file upload path
+upload/ 
