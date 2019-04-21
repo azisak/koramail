@@ -68,12 +68,14 @@ def verify():
     public_key = request.form['public_key']
     signature = request.form['signature']
 
-    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key))
-
     try:
+        vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key))
+
         message_digest = keccak.SHA3_512(message.encode('utf-8'))
         isVerified = vk.verify(bytes.fromhex(signature), message_digest)
     except ecdsa.BadSignatureError:
+        isVerified = False
+    except Exception as err:
         isVerified = False
 
     response = {
