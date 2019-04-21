@@ -176,11 +176,17 @@ def inbox(email):
                 saved_path = "/{}/{}/{}".format(config['flask']['upload_path'],mail_id,attachment.filename)
                 saved_paths.append(saved_path)
             insert_db('UPDATE MAILS  SET attachment_paths = ? WHERE ID = ?',(",".join(saved_paths), mail_id))
-        return Response("Successfully insert new inbox", status=200)
+        response = {
+            'status': "OK"
+        }
+        return jsonify(response)
     elif request.method == 'DELETE':
         mail_id = request.form['mail_id']
         delete_row('DELETE FROM mails WHERE id = ?', [mail_id])
-        return Response("Successfully deleted mail with id : {}".format(mail_id), 200)
+        response = {
+            'status': "OK"
+        }
+        return jsonify(response)
 
 
 
@@ -212,11 +218,17 @@ def sent_mail(email):
                 saved_path = "/{}/{}/{}".format(config['flask']['upload_path'],mail_id,attachment.filename)
                 saved_paths.append(saved_path)
             insert_db('UPDATE MAILS  SET attachment_paths = ? WHERE ID = ?',(",".join(saved_paths), mail_id))
-        return Response("Successfully insert new inbox", status=200)
+        response = {
+            'status': "OK"
+        }
+        return jsonify(response)
     elif request.method == 'DELETE':
         mail_id = request.form['mail_id']
         delete_row('DELETE FROM mails WHERE id = ?', [mail_id])
-        return Response("Successfully deleted mail with id : {}".format(mail_id), 200)
+        response = {
+            'status': "OK"
+        }
+        return jsonify(response)
 
 
 def insert_db(query, args=()):
