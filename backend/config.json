@@ -1,0 +1,6 @@
+{
+  "db": "./database/my_db.db",
+  "flask": {
+    "upload_path": "upload"
+  }
+}
