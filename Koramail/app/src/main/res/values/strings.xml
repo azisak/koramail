@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Koramail</string>
+    <string name="content_description_icon_app">This is the icon.</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="login_direction">Please login using Google account.</string>
+    <string name="login_login">LOGIN</string>
+    <string name="menu_inbox">Inbox</string>
+    <string name="menu_sent_mail">Sent Mail</string>
+    <string name="menu_key">Key</string>
+    <string name="menu_create_mail">New Mail</string>
+
+    <string name="message_loading">Loading</string>
+    <string name="menu_logout">Logout</string>
+</resources>

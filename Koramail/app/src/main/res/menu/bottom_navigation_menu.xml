@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="@string/menu_inbox"
+        android:id="@+id/menu_inbox"
+        android:icon="@drawable/ic_inbox">
+    </item>
+
+    <item
+        android:title="@string/menu_sent_mail"
+        android:id="@+id/menu_sent_mail"
+        android:icon="@drawable/ic_sent_mail">
+    </item>
+
+    <item
+        android:title="@string/menu_key"
+        android:id="@+id/menu_key"
+        android:icon="@drawable/ic_key">
+    </item>
+
+    <item
+        android:title="@string/menu_create_mail"
+        android:id="@+id/menu_create_mail"
+        android:icon="@drawable/ic_create_mail">
+    </item>
+
+    <item
+        android:title="@string/menu_logout"
+        android:id="@+id/menu_logout"
+        android:icon="@drawable/ic_logout">
+    </item>
+</menu>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/container_instruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="Please write your mail below."
+                android:textSize="20sp"
+                />
+
+            <EditText
+                android:id="@+id/container_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:ems="10"
+                android:hint="Destination email"
+                android:inputType="textWebEmailAddress"
+                />
+
+            <EditText
+                android:id="@+id/container_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:ems="10"
+                android:hint="Subject"
+                android:inputType="textPersonName"
+                />
+
+            <EditText
+                android:id="@+id/container_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15sp"
+                android:ems="10"
+                android:hint="Content"
+                android:inputType="textMultiLine"
+                />
+
+            <Button
+                android:id="@+id/button_add_attachment"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="20dp"
+                android:background="#8BDADE"
+                android:text="Add Attachment"
+                />
+
+            <TextView
+                android:id="@+id/container_attachment_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:visibility="gone"
+                />
+
+            <Switch
+                android:id="@+id/switch_is_encrypted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="Is mail encrypted?"
+                />
+
+            <EditText
+                android:id="@+id/container_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:capitalize="characters"
+                android:ems="10"
+                android:hint="(Optional) Key"
+                android:inputType="textPersonName"
+                />
+
+            <Switch
+                android:id="@+id/switch_is_with_signature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="Is mail equipped with signature?"
+                />
+
+            <Button
+                android:id="@+id/button_send_mail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="20dp"
+                android:background="#8BDADE"
+                android:text="Send Mail"
+                />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
